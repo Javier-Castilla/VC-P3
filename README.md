@@ -73,11 +73,13 @@ Como se puede observar en el resultado de aplicar Canny, los bordes de las moned
 
 Una vez se ha procesado la imagen para segmentar las monedas, se buscan sus contornos, filtrando aquellos que no cumplan un área mínima y que no son suficientemente circulares.
 
-<table aling="center">
-    <td align="center">
-        <h3>Fórmula para la circularidad</h3>
-        <math align="center">C = 4π * (area / perimeter²)</math>
-    <td>
+<table align="center">
+    <tr>
+        <td align="center">
+            <h3>Fórmula para la circularidad</h3>
+            <math>C = 4π * (area / perimeter²)</math>
+        <td>
+    <tr>
 </table>
 
 > [!NOTE]
