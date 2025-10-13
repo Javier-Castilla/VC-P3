@@ -73,9 +73,12 @@ Como se puede observar en el resultado de aplicar Canny, los bordes de las moned
 
 Una vez se ha procesado la imagen para segmentar las monedas, se buscan sus contornos, filtrando aquellos que no cumplan un área mínima y que no son suficientemente circulares.
 
-La formula utilizada para medir la circularidad es la siguiente:
-
-<math align="center">C = 4π * (area / perimeter²)</math>
+<table aling="center">
+    <td align="center">
+        <h3>Fórmula para la circularidad</h3>
+        <math align="center">C = 4π * (area / perimeter²)</math>
+    <td>
+</table>
 
 > [!NOTE]
 > Cuanto más se acerque a 1 el resultado de la circularidad, más circular será el contorno.
