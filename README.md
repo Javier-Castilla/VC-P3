@@ -78,7 +78,7 @@ Una vez se ha procesado la imagen para segmentar las monedas, se buscan sus cont
         <td align="center">
             <h3>Fórmula para la circularidad</h3>
             <code>C = 4π * (area / perimeter²)</code>
-        <td>
+        </td>
     </tr>
 </table>
 
