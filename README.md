@@ -17,9 +17,7 @@ Curso 2025/2026
 [![NumPy](https://img.shields.io/badge/NumPy-%23013243?style=for-the-badge&logo=numpy)](https://numpy.org/)
 [![OpenCV](https://img.shields.io/badge/OpenCV-%23FD8C00?style=for-the-badge&logo=opencv)](https://opencv.org/)
 [![Matplotlib](https://img.shields.io/badge/Matplotlib-%43FF6400?style=for-the-badge&logo=matplotlib&logoColor=white)](https://matplotlib.org/)
-[![Pillow](https://img.shields.io/badge/Pillow-%23000000?style=for-the-badge&logo=pillow)](https://pypi.org/project/pillow/)
-[![Tkinter](https://img.shields.io/badge/Tkinter-%2334A853?style=for-the-badge&logo=python&logoColor=white)](https://docs.python.org/3/library/tkinter.html)
-
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-%230F4B8A?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
 
 ## Cómo usar
 ### Primer paso: clonar este repositorio
@@ -75,8 +73,14 @@ Como se puede observar en el resultado de aplicar Canny, los bordes de las moned
 
 Una vez se ha procesado la imagen para segmentar las monedas, se buscan sus contornos, filtrando aquellos que no cumplan un área mínima y que no son suficientemente circulares.
 
-> [NOTE!]
-> Para medir la circularidad, se ha usado la siguiente fórmula: 4 * np.pi * (area / (perimeter * perimeter)). En cuanto más se acerque a 1 el resultado, más circular será el contorno.
+La formula utilizada para medir la circularidad es la siguiente:
+
+<math>
+C = 4π * (area / perimeter²)
+</math>
+
+> [!NOTE]
+> Cuanto más se acerque a 1 el resultado de la circularidad, más circular será el contorno.
 
 El método desarrollado para esta fin es el siguiente:
 
@@ -120,7 +124,7 @@ def __calculate_circularity(self, contour):
     return circularity >= 0.6 and area > 50
 ```
 
-> [NOTE!]
+> [!NOTE]
 > El motivo de elegir una elipse y no un círculo para encerrar el contorno, es porque el eje menor de la elipse coincidirá con el diámetro de la moneda sin tener en cuenta la sombra. De este modo, se evita detectar formas más grandes de las reales.
 
 En este punto ya se ha procesado la imagen para segmentarla y se han encontrado contornos circulares que podrían asociarse a una moneda. Ahora solo falta poner una moneda de referencia para obtener el ratio de píxel / milímetro con el fin de clasificar correctamente los contornos.
