@@ -75,9 +75,7 @@ Una vez se ha procesado la imagen para segmentar las monedas, se buscan sus cont
 
 La formula utilizada para medir la circularidad es la siguiente:
 
-<math>
-C = 4π * (area / perimeter²)
-</math>
+<math align="center">C = 4π * (area / perimeter²)</math>
 
 > [!NOTE]
 > Cuanto más se acerque a 1 el resultado de la circularidad, más circular será el contorno.
