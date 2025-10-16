@@ -147,6 +147,7 @@ def show_detection_and_pick_coin(self, coin):
     plt.imshow(drawed, cmap='gray')
     plt.axis('off')
     plt.show()
+    self.selected_coin = input("Introduce el valor de la moneda de referencia en céntimos")
     self.selected_index = input(f"Selecciona el índice de la moneda con valor {coin}")
     return drawed, self.selected_index
 ```
@@ -164,7 +165,7 @@ def do_the_math(self, debug):
         print('No se han encontrado figuras suficientes para hacer las mates.')
         return
 
-    self.PIXEL_MM_RATIO = self.ellipses[int(self.selected_index)]['width'] / MoneyCounter.coins_d['100']
+    self.PIXEL_MM_RATIO = self.ellipses[int(self.selected_index)]['width'] / MoneyCounter.coins_d[self.selected_coin]
 
     current = []
 
@@ -191,8 +192,6 @@ def do_the_math(self, debug):
 Cabe destacar que se ha realizado el siguiente modelo para una representación más clara de los resultados:
 
 ```python
-from dataclasses import dataclass
-
 @dataclass
 class Coin:
     value: int
@@ -240,7 +239,32 @@ print(count, coins, d_monedas)
 
 Esta sería la salida que se obtendría con el código anterior:
 
-```python
+```
+Money(value=388) [Coin(value=200, diameter=25.75), Coin(value=50, diameter=24.25), Coin(value=100, diameter=23.25), Coin(value=20, diameter=22.25), Coin(value=5, diameter=21.25), Coin(value=10, diameter=19.75), Coin(value=2, diameter=18.75), Coin(value=1, diameter=16.25)] {'original': array([[[255, 255, 255],
+        [255, 255, 255],
+        [255, 255, 255],
+        ...,
+        [255, 255, 255],
+        [255, 255, 255],
+        [255, 255, 255]],
+
+       [[255, 255, 255],
+        [255, 255, 255],
+        [255, 255, 255],
+        ...,
+        [255, 255, 255],
+        [255, 255, 255],
+        [255, 255, 255]],
+
+       [[255, 255, 255],
+        [255, 255, 255],
+        [255, 255, 255],
+        ...,
+        [255, 255, 255],
+        [255, 255, 255],
+        [255, 255, 255]],
+
+       ...,
 ```
 
 A continuación, se muestran los resultados obtenidos para cada una de las imágenes seleccionadas, además de la propuesta inicialmente.
@@ -319,15 +343,64 @@ El proceso de segmentación se ha ido modificando a lo largo de la realización 
 
 En los primeros pasos, se usaba una segmentación simple mediante un umbralizado recurriendo a la función `cv2.threshold` con OTSU. En la mayoría de contornos funcionaba bien, pero cuando aparecían microplásticos con un color muy parecido al fondo, esta técnica de segmentación fallaba.
 
-<img src="">
+<table align="center">
+    <tr align="center">
+        <td>
+            <h3 align="center">TAR</h3>
+            <img src='imgs/TAR_outsu.jpg'>
+        </td>
+        <td>
+            <h3 align="center">FRA</h3>
+            <img src='imgs/FRA_outsu.jpg'>
+        </td>
+        <td>
+            <h3 align="center">PEL</h3>
+            <img src='imgs/PEL_outsu.jpg'>
+        </td>
+    </tr>
+</table>
 
 Posteriormente, decidimos usar el `umbralizado adaptativo Gaussiano`. Parecía dar mejores resultados, pero el desenfoque en las imágenes iniciales provocaba la presencia de demasiado ruido en la detección de contornos, por lo que decidimos aplicar la función `cv2.medianBlur` con buenos resultados.
 
-<img src="">
+<table align="center">
+    <tr align="center">
+        <td>
+            <h3 align="center">TAR</h3>
+            <img src='imgs/TAR_adaptative_median_blur.jpg'>
+        </td>
+        <td>
+            <h3 align="center">FRA</h3>
+            <img src='imgs/FRA_adaptative_median_blur.jpg'>
+        </td>
+        <td>
+            <h3 align="center">PEL</h3>
+            <img src='imgs/PEL_adaptative_median_blur.jpg'>
+        </td>
+    </tr>
+</table>
 
 En este punto los resultados de la clasificación mejoraron bastante. Se incrementó la precisión `de un 52% a un 67%`, pero creímos que no era suficiente. Por ello, decidimos hacer una combinación de las dos técnicas de segmentación que habíamos planteado junto con una `dilatación de bordes`. Este enlace permitía rellenar en la umbralización Gaussiana aquellos bordes que sí pudieron ser detectados con el umbralzado, es decir, ambos umbralizados se complementaban, y es ahí donde el filtrado de mediana nos sirvió de gran ayuda, pues el umbralizado adaptativo como bien se explicó anteriormente producía mucho ruido, pero el filtro de mediana consiguió eliminar prácticamente la totalidad de este.
 
-<img src="">
+<table align="center">
+    <tr align="center">
+        <td>
+            <h3 align="center">TAR</h3>
+            <img src='imgs/TAR_seg.jpg'>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h3 align="center">FRA</h3>
+            <img src='imgs/FRA_seg.jpg'>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h3 align="center">PEL</h3>
+            <img src='imgs/PEL_seg.jpg'>
+        </td>
+    </tr>
+</table>
 
 En el caso de la imagen de test tiene ajustes específicos distintos a los usados para las imágenes de entrenamiento debido a las sombras presentes en la misma.
 
@@ -343,22 +416,32 @@ Expande los píxeles blancos para cerrar pequeños huecos dentro de partículas 
 
 ```python
 lower_bound = max(0, np.percentile(areas, 75))
-cv2.contourArea(x) > 90  # vs 325 en training
+cv2.contourArea(c) > 90  # vs 325 en training
 ```
-
   - Test es más **inclusivo** (detecta partículas más pequeñas)
   - Training fue más **restrictivo** pues solo se deseaba muestras de alta calidad.
 
-<img src="">
 
+<table align="center">
+    <tr align="center">
+        <td>
+            <h3 align="center">Original</h3>
+            <img src="imgs/MPs_test.jpg">
+        </td>
+        <td>
+            <h3 align="center">Segmentación</h3>
+            <img src='imgs/test_seg.jpg'>
+        </td>
+    </tr>
+</table>
 
 <h3 align="center">Filtrado de contornos</h3>
 
 Se elimina ruido de baja frecuencia y pequeños artefactos filtrando las áreas mínimas:
 
 ```python
-cv2.contourArea(x) > 325  # Para entrenamiento
-cv2.contourArea(x) > 90   # Para test (más permisivo)
+cv2.contourArea(c) > 325  # Para entrenamiento
+cv2.contourArea(c) > 90   # Para test (más permisivo)
 ```
 
 La diferencia entre entrenamiento (325) y test (90) se debe a que:
@@ -373,16 +456,13 @@ La diferencia entre entrenamiento (325) y test (90) se debe a que:
 areas = np.array([cv2.contourArea(contour) for contour in current_contours])
 lower_bound = max(0, np.percentile(areas, 75))
 upper_bound = np.percentile(areas, 100)
-current_contours = [x for x in current_contours 
-                    if lower_bound <= cv2.contourArea(x) <= upper_bound]
+current_contours = [c for c in current_contours 
+                    if lower_bound <= cv2.contourArea(c) <= upper_bound]
 ```
 
 Esto se realiza tras identificar que sin la eliminación de los outliers se obtenían falsos positivos pues el modelo estaba entranando con contornos muy pequeños que correspondían al ruido o partículas inrrelevantes.
 
-
-
-<h3 align="center">extracción de características
-</h3>
+<h3 align="center">Extracción de características</h3>
 
 El sistema extrae **14 características** por cada contorno detectado para capturar propiedades discriminativas entre los tres tipos de microplásticos.
 
@@ -540,7 +620,6 @@ Con esto se evita filtración de información de test a training.
 
 StandardScaler usa media/desv.est, sensibles a outliers. Por eso el **filtrado previo de outliers** (percentil 75-100) es una alternativa manual al RobustScaler, MinMaxScaler
 
-
 <h3 align="center">Introducción de características en el clasificador RandomForest</h3>
 
 ```python
@@ -564,23 +643,22 @@ clf = RandomForestClassifier(
 
 **random_state=42**: Fija la semilla aleatoria.Resultados reproducibles entre ejecuciones
 
-
 Se elige Random Forest para este problema debido a lo siguiente:
-   - 28 muestras es muy poco para deep learning
    - Random Forest funciona bien con pocos datos
    - Permite saber qué features son más discriminativas
    - No requiere que los datos sean linealmente separables
    - Resistente a overfitting: El promedio de 100 árboles reduce varianza
    - Regularización mediante max_depth, min_samples_split
+   - No usa redes neuronales
+   - Construye un árbol de decisión con las características de cada clase que se le pasan previamente
 
+Por ello, el modo de proceder ha sido la extracción de características de cada contorno, otorgándosela al clasificador que construirá un árbol de decisión que posteriormente usará para realizar la clasificación.
 
 <h3 align="center">Evaluación de resultados</h3>
 
-Se emplea Índice Espacial R-Tree.Se utiliza esta estructura de datos para validación más rápida y eficiente.
+Se emplea R-Tree. Se utiliza esta estructura de datos para validación más rápida y eficiente, pues es capaz de formar un árbol para encontrar qué figuras geométricas (en este caso rectángulos) contienen un punto dado.
 
 ```python
-from rtree import index
-
 idx = index.Index()
 for i, ann in enumerate(annotations):
     x_min, y_min, x_max, y_max = ann['bbox']
@@ -590,7 +668,7 @@ for i, ann in enumerate(annotations):
 Organiza bounding boxes jerárquicamente
 
 ```python
-def buscar_anotacion(cx, cy):
+def search_annotation(cx, cy):
     posibles = list(idx.intersection((cx, cy, cx, cy)))  # O(log M)
     for i in posibles:
         # Solo revisa candidatos espacialmente cercanos
@@ -599,8 +677,9 @@ def buscar_anotacion(cx, cy):
 - Para 98 predicciones → **~650 comparaciones** (15× más rápido)
 
 la función de matching empleada es:
+
 ```python
-def buscar_anotacion(cx, cy):
+def search_annotation(cx, cy):
     posibles = list(idx.intersection((cx, cy, cx, cy)))
     
     for i in posibles:
@@ -615,6 +694,11 @@ def buscar_anotacion(cx, cy):
 if real_label is None: continue
 ```
 
+> [!NOTE]
+> El árbol R es muy parecido a un árbol B, ya que ambos son estructuras de datos balanceadas diseñadas para mantener los datos organizados y permitir búsquedas eficientes.
+> La principal diferencia es que mientras los árboles B se usan principalmente para datos unidimensionales (como claves numéricas o cadenas de texto), los árboles R están diseñados para datos multidimensionales o espaciales, como coordenadas, rectángulos o polígonos.
+> En un árbol R, cada nodo representa un rectángulo delimitador mínimo (MBR) que engloba todos los elementos o subnodos que contiene, lo cual facilita operaciones espaciales como búsquedas por rango o consultas de intersección.
+
 **Si no hay match**:
 - El contorno se **descarta** de la evaluación
 - **No afecta al modelo**, solo a las métricas
@@ -622,7 +706,9 @@ if real_label is None: continue
   - Solo evalúan predicciones que pudieron ser validadas
   - Ignoramos contornos detectados pero no anotados
 
-<img src="">
+<div>
+    <img src="imgs/test_cls.jpg">
+</div>
 
 #### 1. **Accuracy: 85.71%**
 ```python
@@ -648,8 +734,13 @@ f1 = f1_score(y_true, y_pred, average='weighted')
 **Media armónica** de precision y recall
 **85.14%** indica buen balance entre ambas
 
+A continuación, se muestra la matriz de confusión con lo resultados obtenidos:
 
-<h3 align="center">Evaluación de resultados</h3>
+<div align="center">
+    <img src="imgs/confusion.jpg">
+</div>
+
+<h3 align="center">Bibliografía</h3>
 
 - [Repositorio usado como base y enuneciado de esta práctica](https://github.com/otsedom/otsedom.github.io/tree/main/VC/P3)
 - [Fit Ellipse de CV2](https://docs.opencv.org/4.x/de/d62/tutorial_bounding_rotated_ellipses.html)
