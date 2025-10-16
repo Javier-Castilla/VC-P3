@@ -1,11 +1,23 @@
+<div align="center">
+  <img src="https://www.eii.ulpgc.es/sites/default/files/eii-acron-mod.png"
+       alt="Logo ULPGC"
+       width="500"
+       style="margin-bottom: 10px;">
+</div>
+
 <h1 align="center">Práctica 3</h1>
 
-<h2 align="center">Asignatura: Visión por Computador</h2>
-
-Universidad de Las Palmas de Gran Canaria  
-Escuela de Ingeniería en Informática  
-Grado de Ingeniería Informática  
-Curso 2025/2026 
+<div align="center" style="font-family: 'Segoe UI', sans-serif; line-height: 1.6; margin-top: 30px;">
+  <h2 style="font-size: 28px; margin-bottom: 10px;">
+    Asignatura: <span>Visión por Computador</span>
+  </h2>
+  <p style="font-size: 18px; margin: 4px 0;">
+    Grado en Ingeniería Informática
+  </p>
+  <p style="font-size: 18px; margin-top: 10px;">
+    Curso <strong>2025 / 2026</strong>
+  </p>
+</div>
 
 <h2 align="center">Autores</h2>
 
