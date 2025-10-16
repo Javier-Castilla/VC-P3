@@ -37,7 +37,7 @@
 ```bash
 git clone "https://github.com/Javier-Castilla/VC-P3"
 ```
-### Segundo paso: Activar tu envinroment e instalar dependencias
+### Segundo paso: Activar tu environment e instalar dependencias
 > [!NOTE]
 > Todas las dependencias pueden verse en [este archivo](environment.yml). Si se desea, puede crearse un entorno de Conda con dicho archivo.
 
@@ -57,7 +57,7 @@ conda activate VC_P3
 Finalmente, abriendo nuestro IDE favorito y teniendo instalado todo lo necesario para poder ejecutar notebooks, se puede ejecutar el cuaderno de la práctica [Practica3.ipynb](Practica3.ipynb) seleccionando el environment anteriormente creado.
 
 > [!IMPORTANT]
-> Todos los bloques de código deben ejecutarse en órden, de lo contrario, podría ocasionar problemas durante la ejecución del cuaderno.
+> Todos los bloques de código deben ejecutarse en orden, de lo contrario, podría ocasionar problemas durante la ejecución del cuaderno.
 
 <h1 align="center">Tareas</h1>
 
@@ -65,7 +65,7 @@ Finalmente, abriendo nuestro IDE favorito y teniendo instalado todo lo necesario
 
 En esta tarea se realizará un sistema que sea capaz de contar el dinero que hay en una imagen únicamente detectando las monedas que aparecen en ella para posteriormente, clasificar las detecciones asignándoles su valor monetario.
 
-Para ello, nuestra técnica ha sido umbralizar la imagen para intentar separar las monedas del fondo, donde luego, se tratará de encontrar contornos exteriores y encerrarlos en una elipse. El motivo por el que hemos decidio usar una elipse es porque esta nos permite hacer un conteo correcto incluso cuando hay sombras presentes en la imagen, pues nos hemos percatado de que su eje menor coincidirá con el diámetro de la moneda aunque haya sombras en el umbralizado.
+Para ello, nuestra técnica ha sido umbralizar la imagen para intentar separar las monedas del fondo, donde luego, se tratará de encontrar contornos exteriores y encerrarlos en una elipse. El motivo por el que hemos decidió usar una elipse es porque esta nos permite hacer un conteo correcto incluso cuando hay sombras presentes en la imagen, pues nos hemos percatado de que su eje menor coincidirá con el diámetro de la moneda aunque haya sombras en el umbralizado.
 
 Con la imagen inicial propuesta, el resultado de la umbralización es el siguiente:
 
@@ -126,7 +126,7 @@ def __find_circular_contours(self, image):
     return contours_ellipses
 ```
 
-En este método, primero se obtienen los contornos exteriores haciendo uso de `cv2.findContours`, seleccionando los contornos externos con `cv2.RETR_EXTERNAL`. Posteriormente, mediante un `list comprehension` se usa el método `__calculate_circularity`, el cuál calculará la circularidad del contorno y servirá para discriminarlo o no teniendo en cuanta también su área. De este modo, solo nos quedamos con los contornos circulares lo suficientemente grandes.
+En este método, primero se obtienen los contornos exteriores haciendo uso de `cv2.findContours`, seleccionando los contornos externos con `cv2.RETR_EXTERNAL`. Posteriormente, mediante un `list comprehension` se usa el método `__calculate_circularity`, el cuál calculará la circularidad del contorno y servirá para discriminarlo o no teniendo en cuenta también su área. De este modo, solo nos quedamos con los contornos circulares lo suficientemente grandes.
 
 > [!NOTE]
 > Los contornos filtrados se han ordenado con la función nativa de python `sorted` con el fin de conseguir un mejor reconocimiento en las salidas del proceso y poder así corregir errores fácilmente.
@@ -328,7 +328,7 @@ Cabe destacar que se ha hecho uso de la `detección de contornos` para segmentar
 
 <h2 align="center">Tarea 2</h2>
 
-Para la realización de esta tarea se extraerán características geométricas y visuales de los diferentes tipos de microplásticos para posteriormente. Posteriormetne, se usarán esas características extraídas tratando de clasificar correctamente las 3 clases de microplásticos diferentes sobre la imagen [MPs_test.png](imgs/MPs_test.png).
+Para la realización de esta tarea se extraerán características geométricas y visuales de los diferentes tipos de microplásticos para posteriormente. Posteriormente, se usarán esas características extraídas tratando de clasificar correctamente las 3 clases de microplásticos diferentes sobre la imagen [MPs_test.png](imgs/MPs_test.png).
 
 El sistema es capaz de identificar y clasificar tres tipos diferentes de microplásticos:
 
@@ -346,7 +346,7 @@ Para lograr este objetivo, se han realizado los siguientes procedimientos:
 4. Estandarizado de los valores de las características.
 5. Introducción de características en el clasificador RandomForest.
 6. Repetición de los puntos del 2 al 4 para la imagen de test.
-7. Clasficación de los contornos detectados en la imagen de test.
+7. Clasificación de los contornos detectados en la imagen de test.
 8. Evaluación de resultados.
 
 <h3 align="center">Segmentación y extracción de contornos</h3>
@@ -391,7 +391,7 @@ Posteriormente, decidimos usar el `umbralizado adaptativo Gaussiano`. Parecía d
     </tr>
 </table>
 
-En este punto los resultados de la clasificación mejoraron bastante. Se incrementó la precisión `de un 52% a un 67%`, pero creímos que no era suficiente. Por ello, decidimos hacer una combinación de las dos técnicas de segmentación que habíamos planteado junto con una `dilatación de bordes`. Este enlace permitía rellenar en la umbralización Gaussiana aquellos bordes que sí pudieron ser detectados con el umbralzado, es decir, ambos umbralizados se complementaban, y es ahí donde el filtrado de mediana nos sirvió de gran ayuda, pues el umbralizado adaptativo como bien se explicó anteriormente producía mucho ruido, pero el filtro de mediana consiguió eliminar prácticamente la totalidad de este.
+En este punto los resultados de la clasificación mejoraron bastante. Se incrementó la precisión `de un 52% a un 67%`, pero creímos que no era suficiente. Por ello, decidimos hacer una combinación de las dos técnicas de segmentación que habíamos planteado. Este enlace permitía rellenar en la umbralización Gaussiana aquellos bordes que sí pudieron ser detectados con el umbralizado, es decir, ambos umbralizados se complementaban, y es ahí donde el filtrado de mediana nos sirvió de gran ayuda, pues el umbralizado adaptativo como bien se explicó anteriormente producía mucho ruido, pero el filtro de mediana consiguió eliminar prácticamente la totalidad de este.
 
 <table align="center">
     <tr align="center">
@@ -472,7 +472,7 @@ current_contours = [c for c in current_contours
                     if lower_bound <= cv2.contourArea(c) <= upper_bound]
 ```
 
-Esto se realiza tras identificar que sin la eliminación de los outliers se obtenían falsos positivos pues el modelo estaba entranando con contornos muy pequeños que correspondían al ruido o partículas inrrelevantes.
+Esto se realiza tras identificar que sin la eliminación de los outliers se obtenían falsos positivos pues el modelo estaba entranando con contornos muy pequeños que correspondían al ruido o partículas irrelevantes.
 
 <h3 align="center">Extracción de características</h3>
 
@@ -538,7 +538,7 @@ mean_intensity = np.mean(gray_pixels)
 ```
 Mide el brillo promedio dentro del contorno.
 
-Este descriminador es necesario pues se observa que el alquitrán y los fragmentos geométricamente son similares pues ambos son irregulares con la única clara diferencia siendo el color. Las partículas de alquitrán son siempre de color negro.
+Este discriminador es necesario pues se observa que el alquitrán y los fragmentos geométricamente son similares pues ambos son irregulares con la única clara diferencia siendo el color. Las partículas de alquitrán son siempre de color negro.
 
 
 #### 10. **Desviación Estándar de Intensidad (Std)**
@@ -547,7 +547,7 @@ std_intensity = np.std(gray_pixels)
 ```
 Mide la variabilidad de brillo dentro del contorno.
 
-Pese a diferenciar el alqutrán por la intensidad ya que se identifica que son de colores negros y esa característica es clave para su identificación, se observa que los fragmentos presentan diversos colores pudiendo obtener altas intensidad si son de collor azul oscuro por ejemplo y ser confundidos por tanto con el alquitrán. 
+Pese a diferenciar el alquitrán por la intensidad ya que se identifica que son de colores negros y esa característica es clave para su identificación, se observa que los fragmentos presentan diversos colores pudiendo obtener altas intensidad si son de color azul oscuro por ejemplo y ser confundidos por tanto con el alquitrán. 
 
 La solución encontrada es que los fragmentos pese a poderse encontrar en colores oscuros no presentan un color uniforme debido a su textura y reflejos. 
 
@@ -574,7 +574,7 @@ Para detectar irregularidades.
 Mide combinaciones no lineales de features existentes pues hemos llegado a la conclusión que ciertas características tienen más peso que otras.
     - **test** descrimina el alquitrán pues no son circulares y presentan bajas intensidades por su color negro.
     - **test2** combina forma (circularity, solidity) → discrimina pellets
-     - **test3** discrimina alquitrán oscuro de los fragmentos oscuros pues estos últimos presentan no uniformidad por su textura y reflejos mientras uwe los alquitranes si son uniformes
+     - **test3** discrimina alquitrán oscuro de los fragmentos oscuros pues estos últimos presentan no uniformidad por su textura y reflejos mientras que los alquitranes si son uniformes
 
 El código incluye **manejo exhaustivo de casos edge**:
 
@@ -754,7 +754,7 @@ A continuación, se muestra la matriz de confusión con lo resultados obtenidos:
 
 <h3 align="center">Bibliografía</h3>
 
-- [Repositorio usado como base y enuneciado de esta práctica](https://github.com/otsedom/otsedom.github.io/tree/main/VC/P3)
+- [Repositorio usado como base y enunciado de esta práctica](https://github.com/otsedom/otsedom.github.io/tree/main/VC/P3)
 - [Fit Ellipse de CV2](https://docs.opencv.org/4.x/de/d62/tutorial_bounding_rotated_ellipses.html)
 - [Circularidad](https://imagej.net/ij/plugins/circularity.html)
 - [Dilatación para tratar de cerrar bordes](https://pythongeeks.org/dilation-and-erosion-in-opencv/)
