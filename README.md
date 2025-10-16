@@ -292,12 +292,53 @@ Cabe destacar que se ha hecho uso de la `detección de contornos` para segmentar
 
 <h2 align="center">Tarea 2</h2>
 
+Para la realización de esta tarea se extraerán características geométricas y visuales de los diferentes tipos de microplásticos para posteriormente. Posteriormetne, se usarán esas características extraídas tratando de clasificar correctamente las 3 clases de microplásticos diferentes sobre la imagen [MPs_test.png](imgs/MPs_test.png).
 
-<h2 align="center">Bibliografía</h2>
+Para lograr este objetivo, se han realizado los siguientes procedimientos:
+1. Uso de un conjunto de 3 imágenes, una para cada clase.
+2. Segmentación de cada imagen para la extracción de contornos.
+3. Tratamiento de los contornos extraídos, obteniendo características de cada uno de ellos.
+4. Estandarizado de los valores de las características.
+5. Introducción de características en el clasificador RandomForest.
+6. Repetición de los puntos del 2 al 4 para la imagen de test.
+7. Clasficación de los contornos detectados en la imagen de test.
+8. Evaluación de resultados.
+
+<h3 align="center">Segmentación y extracción de contornos</h3>
+
+El proceso de segmentación se ha ido modificando a lo largo de la realización de esta tarea. Esto ha sido impulsado por un descontento inicial con los resultados obtenidos las primeras veces, pues notamos que realmente se debía a una segmentación algo pobre de las imágenes iniciales sobre las que se extraerían las características.
+
+En los primeros pasos, se usaba una segmentación simple mediante un umbralizado recurriendo a la función `cv2.threshold` con OTSU. En la mayoría de contornos funcionaba bien, pero cuando aparecían microplásticos con un color muy parecido al fondo, esta técnica de segmentación fallaba.
+
+<img src="">
+
+Posteriormente, decidimos usar el `umbralizado adaptativo Gaussiano`. Parecía dar mejores resultados, pero el desenfoque en las imágenes iniciales provocaba la presencia de demasiado ruido en la detección de contornos, por lo que decidimos aplicar la función `cv2.medianBlur` con buenos resultados.
+
+<img src="">
+
+En este punto los resultados de la clasificación mejoraron bastante. Se incrementó la precisión `de un 52% a un 67%`, pero creímos que no era suficiente. Por ello, decidimos hacer una combinación de las dos técnicas de segmentación que habíamos planteado junto con una `dilatación de bordes`. Este enlace permitía rellenar en la umbralización Gaussiana aquellos bordes que sí pudieron ser detectados con el umbralzado, es decir, ambos umbralizados se complementaban, y es ahí donde el filtrado de mediana nos sirvió de gran ayuda, pues el umbralizado adaptativo como bien se explicó anteriormente producía mucho ruido, pero el filtro de mediana consiguió eliminar prácticamente la totalidad de este.
+
+<img src="">
+
+<h3 align="center">Filtrado de contornos y extracción de características</h3>
+
+Ya hemos conseguido segmentar muy bien las partículas de las 3 imágenes usadas para extraer características. Ahora, era necesario filtrar algunos contornos que podrían ser pequeñas manchas en la imagen. Para lograr esto, se usó un método estadístico estudiado en cursos anteriores, la `eliminación de outliers`. Además, se propuso un área mínima de contorno, descartando todos aquellos que no la superasen.
+
+> [!NOTE]
+> Concretamente, la eliminación de outliers consiste en descartar todos aquellos que estén por encima del percentil 100 y por encima del percentil 75.
+
+<h3 align="center">Estandarizado de valores</h3>
+
+<h3 align="center">Introducción de características en el clasificador RandomForest</h3>
+
+<h3 align="center">Imagen de test para la clasificación</h3>
+
+<h3 align="center">Evaluación de resultados</h3>
 
 - [Repositorio usado como base y enuneciado de esta práctica](https://github.com/otsedom/otsedom.github.io/tree/main/VC/P3)
 - [Fit Ellipse de CV2](https://docs.opencv.org/4.x/de/d62/tutorial_bounding_rotated_ellipses.html)
-- [Dilatación para tratar de cerrar bordes]()
+- [Circularidad](https://imagej.net/ij/plugins/circularity.html)
+- [Dilatación para tratar de cerrar bordes](https://pythongeeks.org/dilation-and-erosion-in-opencv/)
 - [Clasificador RandomForest basado en árboles de decisión](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)
 - [RTree para optimización de búsquedas](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)
 - [Estandarizador de valores](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html)
